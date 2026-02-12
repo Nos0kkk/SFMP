@@ -1,0 +1,11 @@
+{
+  "setCompiler" : "g++",
+  "setFlags" : "-Wall -Wextra -O2 -o",
+  "setFiles" : 
+  {
+    "setSrcFile" : "src/main.cpp",
+    "setExecFile" : "SFMP"
+  },
+  "setLibs" : "$(pkg-config --cflags --libs gtkmm-3.0) -I/data/data/com.termux/files/usr/include/SFML -Llibs -lgtkmm-3.0 -lsfml-audio -lc++_shared -lm -lc -ldl",
+  "autoStart" : false
+}

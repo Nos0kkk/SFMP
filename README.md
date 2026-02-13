@@ -1,7 +1,7 @@
 # SFMP-player
 This is music player, for linux
 
-[](SFMP.jpg)
+![](SFMP.jpg)
 screenshot
 
 # WARNING

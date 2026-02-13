@@ -1,6 +1,9 @@
 # SFMP-player
 This is music player, for linux
 
+[](SFMP.jpg)
+screenshot
+
 # WARNING
  The player is very raw, and not assembled
  ```But if you feel like it, you can assemble the player yourself```

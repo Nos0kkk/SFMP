@@ -19,7 +19,7 @@ elif [ "$1" = "--linux-fedora" ]; then
   echo "SFMP: player was best build, for launch: ./SFMP"
 
 elif [ "$1" = "--linux-debian" ]; then
-  sudo apt install clang libgtkmm-3.0-dev pkg-config libsfml-dev libtag-dev
+  sudo apt install clang libgtkmm-3.0-dev pkg-config libsfml-dev libtag1-dev
 
   clang++ src/main.cpp -o SFMP $(pkg-config --cflags --libs gtkmm-3.0 taglib) -lsfml-audio
 

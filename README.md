@@ -1,5 +1,5 @@
 # SFMP-player
-This is music player, for linux
+This is GTK music player, for linux
 
 ![](SFMP.jpg)
 screenshot
@@ -7,7 +7,7 @@ screenshot
 # TODO:
 - [x] Modern interface
 - [x] Playing music
-- [x] Extract icons
+- [x] Extract icons (BETA)
 - [ ] Plugins
 - [ ] More music format
 
@@ -19,8 +19,8 @@ screenshot
 To download SFMP, you need to assemble it:
 
 ```bash
-git clone https://github.com/Nos0kkk/SFMP-player.git
-cd SFMP-player
+git clone https://github.com/Nos0kkk/SFMP.git
+cd SFMP
 ```
 # Next for the buil
 ***Arch Linux***

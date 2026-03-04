@@ -3,9 +3,12 @@ window {
 }
 
 .ico {
-  background-color: #333333;
   border-radius: 20px;
-  background-image: none;
+  /* background-image: none; */
+}
+
+.png {
+  border-radius: 20px;
 }
 
 .srl {

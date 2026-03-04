@@ -1,19 +1,51 @@
 # SFMP-player
 This is music player, for linux
 
-[](SFMP.jpg)
+![](SFMP.jpg)
 screenshot
 
-# WARNING
- The player is very raw, and not assembled
- ```But if you feel like it, you can assemble the player yourself```
+# TODO:
+- [x] Modern interface
+- [x] Playing music
+- [x] Extract icons
+- [ ] Plugins
+- [ ] More music format
 
- ```bash
- sudo apt install gcc pkg-config gtkmm3 sfml git
- git clone https://github.com/Nos0kkk/SFMP.git
- cd SFMP
- g++ src/main.cpp -o SFMP $(pkg-config --cflags --libs gtkmm-3.0 SFML)
- ./SFMP
- ```
+# Format audio file
+- [x] MP3
+- [x] WAV
 
-# Still, even when assembling, the player can be unstable!
+# How to install?
+To download SFMP, you need to assemble it:
+
+```bash
+git clone https://github.com/Nos0kkk/SFMP-player.git
+cd SFMP-player
+```
+# Next for the buil
+***Arch Linux***
+```bash
+./build.sh --linux-arch
+```
+***Fedora Linux***
+```bash
+./build.sh --linux-fedora
+```
+***Debain/Ubuntu/Kali/Mint/Astra/Tails/...***
+```bash
+./build.sh --linux-debian
+```
+***Alpine Linux***
+```bash
+./build.sh --linux-alpine
+```
+***Void Linux***
+```bash
+./build.sh --linux-void
+```
+***Termux (Android)***
+```bash
+./build.sh --android-termux
+```
+
+# BETA v1.0

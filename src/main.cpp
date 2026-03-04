@@ -1,10 +1,48 @@
+#include <SFML/System/Time.hpp>
 #include <gtkmm.h>
-#include <Audio.hpp>
+#include <SFML/Audio.hpp>
 #include <filesystem>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <thread>
+#include <chrono>
+
+#include <taglib/fileref.h>
+#include <taglib/tag.h>
+#include <taglib/tbytevector.h>
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/attachedpictureframe.h>
+#include <fstream>
+
+void extractCover(const std::string& audioPath, const std::string& outputFolder) {
+  if (!std::filesystem::exists(outputFolder)) {
+    std::filesystem::create_directories(outputFolder);
+  }
+
+  TagLib::MPEG::File file(audioPath.c_str());
+  if (file.isValid() && file.ID3v2Tag()) {
+    auto frames = file.ID3v2Tag()->frameList("APIC");
+    if (!frames.isEmpty()) {
+      auto* frame = static_cast<TagLib::ID3v2::AttachedPictureFrame*>(frames.front());
+
+      std::string ext = (frame->mimeType() == "image/png") ? ".png" : ".jpg";
+
+      std::filesystem::path outputPath = std::filesystem::path(outputFolder) / ("icon" + ext);
+
+      std::ofstream out(outputPath, std::ios::binary);
+      out.write(frame->picture().data(), frame->picture().size());
+      out.close();
+    } else {
+      std::filesystem::remove("icons/icon.png");
+    }
+  }
+}
+
+
+
 
 std::string curdir;
 
@@ -30,7 +68,7 @@ class SFMP : public Gtk::Window {
     int selectfold = openfold.run();
     
     if (selectfold == Gtk::RESPONSE_OK) {
-      curdir = openfold.get_filename();;
+      curdir = openfold.get_filename();
     }
     
     ico.set_size_request(150, 150);
@@ -38,6 +76,8 @@ class SFMP : public Gtk::Window {
     
     fix.add(ico);
     fix.move(ico, 450, 100);
+
+    ico.hide();
     
     play.set_size_request(50, 50);
     play.set_label("▶");
@@ -98,7 +138,7 @@ class SFMP : public Gtk::Window {
       butlist[i]->set_size_request(330, 20);
       list->pack_start(*butlist[i]);
       
-      butlist[i]->signal_clicked().connect([this, idx, lablist](){
+      butlist[i]->signal_clicked().connect([this, idx, lablist, i](){
         play.set_label("▶");
         
         if (mus) {
@@ -108,7 +148,44 @@ class SFMP : public Gtk::Window {
         
         std::string curmusic = curdir + "/" + lablist[idx];
         mus = std::make_unique<sf::Music>();
-        mus->openFromFile(curmusic);
+        (void)mus->openFromFile(curmusic);
+
+        std::string pathicon = curdir + "/" + lablist[i];
+        extractCover(pathicon, "./icons");
+
+        if (std::filesystem::exists("icons/icon.png")) {
+          auto pbuf = Gdk::Pixbuf::create_from_file("icons/icon.png");
+
+          int wid = pbuf->get_width();
+          int hei = pbuf->get_height();
+
+          int new_wid, new_hei;
+          if (wid > hei) {
+            new_wid = 150;
+            new_hei = (150 * hei) / wid;
+          } else {
+            new_wid = 150;
+            new_hei = (150 * wid) / hei;
+          }
+
+          auto scal = pbuf->scale_simple(new_wid, new_hei, Gdk::INTERP_BILINEAR);
+
+          icon.set(scal);
+        } else {
+          ico.show();
+        }
+        icon.set_size_request(150, 150);
+        icon.get_style_context()->add_class("png");
+
+        fix.add(icon);
+        fix.move(icon, 450, 100);
+        icon.show();
+
+        sf::Time mussec = mus->getDuration();
+
+        secmus = mussec.asSeconds();
+
+        scale.set_range(0.0, secmus);
         
         if (lablist[idx].length() > 20) {
           std::string mininame = lablist[idx].substr(0, 20) + "...";
@@ -118,16 +195,48 @@ class SFMP : public Gtk::Window {
         }
       });
     }
-    
+
+    double sc = 0;
     play.signal_clicked().connect([&](){
       if (click == 0) {
-        mus->stop();
+        mus->pause();
         play.set_label("||");
         mus->play();
+
+        scale.signal_button_release_event().connect([&](GdkEventButton* event){
+            setsec = scale.get_value();
+            sc = setsec;
+            mus->setPlayingOffset(sf::seconds(setsec));
+            return false;
+        });
+
+          scale.signal_button_press_event().connect([&](GdkEventButton* event){
+            setsec_press = scale.get_value();
+            sc = setsec;
+            mus->setPlayingOffset(sf::seconds(setsec_press));
+            return false;
+        });
+
+        conn = Glib::signal_timeout().connect([&]() -> bool {
+          sc = mus->getPlayingOffset().asSeconds();
+          sc += 1.0;
+          scale.set_value(sc);
+
+          if (sc >= secmus) {
+            sc = 0;
+            play.set_label("▶");
+            click = 0;
+            return false;
+          }
+          return true;
+        }, 100);
         click = 1;
       } else if (click == 1) {
         play.set_label("▶");
         mus->pause();
+        if (conn.connected()) {
+          conn.disconnect();
+        }
         click = 0;
       }
     }); 
@@ -143,8 +252,12 @@ class SFMP : public Gtk::Window {
   Gtk::Label name;
   Gtk::ScrolledWindow scroll;
   Gtk::Box* list;
+  Gtk::Image icon;
+  sigc::connection conn;
+  double setsec, setsec_press;
   int click = 0;
   std::unique_ptr<sf::Music> mus;
+  double secmus;
 };
 
 int main(int argc, char* argv[]) {

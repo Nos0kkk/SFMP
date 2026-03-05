@@ -36,7 +36,7 @@ void extractCover(const std::string& audioPath, const std::string& outputFolder)
       out.write(frame->picture().data(), frame->picture().size());
       out.close();
     } else {
-      std::filesystem::remove("icons/icon.png");
+      std::filesystem::remove("sfmp-icons/icon.png");
     }
   }
 }
@@ -53,7 +53,7 @@ class SFMP : public Gtk::Window {
     set_default_size(700, 500);
     
     auto css = Gtk::CssProvider::create();
-    css->load_from_path("style/style.css");
+    css->load_from_path("sfmp-style/style.css");
     
     Gtk::StyleContext::add_provider_for_screen(Gdk::Screen::get_default(), css, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     
@@ -151,10 +151,10 @@ class SFMP : public Gtk::Window {
         (void)mus->openFromFile(curmusic);
 
         std::string pathicon = curdir + "/" + lablist[i];
-        extractCover(pathicon, "./icons");
+        extractCover(pathicon, "./sfmp-icons");
 
-        if (std::filesystem::exists("icons/icon.png")) {
-          auto pbuf = Gdk::Pixbuf::create_from_file("icons/icon.png");
+        if (std::filesystem::exists("sfmp-icons/icon.png")) {
+          auto pbuf = Gdk::Pixbuf::create_from_file("sfmp-icons/icon.png");
 
           int wid = pbuf->get_width();
           int hei = pbuf->get_height();

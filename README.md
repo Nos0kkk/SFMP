@@ -5,9 +5,10 @@ This is GTK music player, for linux
 screenshot
 
 # TODO:
-- [x] Modern interface
+- [x] Modern interface (BETA)
 - [x] Playing music
 - [x] Extract icons (BETA)
+- [x] CLI
 - [ ] Plugins
 - [ ] More music format
 
@@ -22,7 +23,7 @@ To download SFMP, you need to assemble it:
 git clone https://github.com/Nos0kkk/SFMP.git
 cd SFMP
 ```
-# Next for the buil
+# Next for the build
 ***Arch Linux***
 ```bash
 ./build.sh --linux-arch
